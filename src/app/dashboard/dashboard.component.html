@@ -1,0 +1,216 @@
+<div flex layout-gt-sm="row" tdMediaToggle="gt-xs" layout-wrap [mediaClasses]="['push-sm']">
+  <div flex-gt-sm="50">
+    <mat-card>
+      <mat-card-title>
+        <div layout="row" layout-align="start center">
+          <span flex>Card title</span>
+          <span>
+            <button mat-icon-button
+                    matTooltip="Card settings"
+                    [mat-menu-trigger-for]="settings1">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu xPosition="before" #settings1="matMenu">
+              <button mat-menu-item (click)="openTemplate()"> Settings </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item> Remove </button>
+            </mat-menu>
+          </span>
+        </div>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+      <div [style.height.px]="280" class="push-top-sm">
+        <ngx-charts-line-chart
+          [scheme]="{ domain: [ '#4DD0E1', '#BA68C8', '#FF7043' ] }"
+          [results]="times"
+          [gradient]="gradient"
+          [autoScale]="false"
+          [xAxis]="true"
+          [yAxis]="true"
+          [legend]="true"
+          [showXAxisLabel]="true"
+          [showYAxisLabel]="true"
+          [xAxisLabel]="xAxisLabel"
+          [yAxisLabel]="yAxisLabel"
+          [xAxisTickFormatting]="axisDate">
+        </ngx-charts-line-chart>
+      </div>
+    </mat-card>
+  </div>
+  <div flex-gt-sm="50">
+    <mat-card>
+      <mat-card-title>
+        <div layout="row" layout-align="start center">
+          <span flex>Card title</span>
+          <span>
+            <button mat-icon-button
+                    matTooltip="Card settings"
+                    [mat-menu-trigger-for]="settings2">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu xPosition="before" #settings2="matMenu">
+              <button mat-menu-item> Settings </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item> Remove </button>
+            </mat-menu>
+          </span>
+        </div>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+      <div class="pad">
+        <div [style.height.px]="250">
+          <ngx-charts-bar-vertical-2d
+            [scheme]="{ domain: [ '#4DD0E1', '#BA68C8', '#FF7043' ] }"
+            [results]="multi"
+            [barPadding]="18"
+            [groupPadding]="28"
+            [gradient]="true"
+            [xAxis]="true"
+            [yAxis]="true"
+            [legend]="false"
+            [showXAxisLabel]="false"
+            [showYAxisLabel]="false">
+          </ngx-charts-bar-vertical-2d>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <div flex-gt-sm="50">
+    <mat-card>
+      <mat-card-title>
+        <div layout="row" layout-align="start center">
+          <span flex>Card title</span>
+          <span>
+            <button mat-icon-button
+                    matTooltip="Card settings"
+                    [mat-menu-trigger-for]="settings3">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu xPosition="before" #settings3="matMenu">
+              <button mat-menu-item> Settings </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item> Remove </button>
+            </mat-menu>
+          </span>
+        </div>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+      <div class="pad-top pad-bottom">
+        <div class="overflow-hidden" [style.height.px]="250">
+          <div [style.height.px]="270">
+            <ngx-charts-area-chart-stacked
+              [scheme]="{ domain: [ '#4DD0E1', '#BA68C8', '#FF7043' ] }"
+              [results]="times"
+              [gradient]="true"
+              [xAxis]="true"
+              [yAxis]="true"
+              [legend]="false"
+              [showXAxisLabel]="true"
+              [showYAxisLabel]="true"
+              [xAxisLabel]="xAxisLabel"
+              [yAxisLabel]="yAxisLabel"
+              [xAxisTickFormatting]="axisDate">
+            </ngx-charts-area-chart-stacked>
+          </div>
+        </div>
+      </div>
+    </mat-card>
+  </div>
+  <div flex-gt-sm="50">
+    <mat-card>
+      <mat-card-title>
+        <div layout="row" layout-align="start center">
+          <span flex>Card title</span>
+          <span>
+            <button mat-icon-button
+                    matTooltip="Card settings"
+                    [mat-menu-trigger-for]="settings4">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu xPosition="before" #settings4="matMenu">
+              <button mat-menu-item> Settings </button>
+              <mat-divider></mat-divider>
+              <button mat-menu-item> Remove </button>
+            </mat-menu>
+          </span>
+        </div>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+      <td-data-table
+        [data]="data"
+        [style.height.px]="290">
+      </td-data-table>
+    </mat-card>
+  </div>
+  <div flex-gt-sm="50">
+    <mat-card>
+      <mat-card-title>
+        <div layout="row" layout-align="start center">
+          <span flex>Card title</span>
+          <span>
+            <button mat-icon-button
+                    matTooltip="Card settings"
+                    [mat-menu-trigger-for]="settings5">
+              <mat-icon>more_vert</mat-icon>
+            </button>
+            <mat-menu xPosition="before" #settings5="matMenu">
+                <button mat-menu-item> Settings </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item> Remove </button>
+            </mat-menu>
+          </span>
+        </div>
+      </mat-card-title>
+      <mat-divider></mat-divider>
+      <mat-nav-list>
+        <a mat-list-item>
+          <mat-icon matListAvatar color="primary">mood</mat-icon>
+          <h3 mat-line>LiteCoin</h3>
+          <p mat-line>exceeding goal!</p>
+          <div flex="100">
+            <ngx-charts-linear-gauge
+              [scheme]="{ domain: [ '#4DD0E1' ] }"
+              [value]="90"
+              [previousValue]="80"
+              [min]="0"
+              [max]="100"
+              [units]="'alerts'">
+            </ngx-charts-linear-gauge>
+          </div>
+        </a>
+        <mat-divider mat-inset></mat-divider>
+        <a mat-list-item>
+          <mat-icon matListAvatar color="accent">sentiment_satisfied</mat-icon>
+          <h3 mat-line>ReddCoin</h3>
+          <p mat-line>goal almost achieved!</p>
+          <div flex="100">
+            <ngx-charts-linear-gauge
+              [scheme]="{ domain: [ '#BA68C8' ] }"
+              [value]="60"
+              [previousValue]="70"
+              [min]="0"
+              [max]="100"
+              [units]="'alerts'">
+            </ngx-charts-linear-gauge>
+          </div>
+        </a>
+        <mat-divider mat-inset></mat-divider>
+        <a mat-list-item>
+          <mat-icon matListAvatar color="warn">sentiment_very_dissatisfied</mat-icon>
+          <h3 mat-line>Verge</h3>
+          <p mat-line>falling short of goal!</p>
+          <div flex="100">
+            <ngx-charts-linear-gauge
+              [scheme]="{ domain: [ '#FF7043' ] }"
+              [value]="40"
+              [previousValue]="60"
+              [min]="0"
+              [max]="100"
+              [units]="'alerts'">
+            </ngx-charts-linear-gauge>
+          </div>
+        </a>
+      </mat-nav-list>
+    </mat-card>
+  </div>
+</div>
