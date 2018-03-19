@@ -5,6 +5,8 @@ import { TdMediaService, TdDigitsPipe, TdLayoutManageListComponent, TdRotateAnim
 import { DatePipe } from '@angular/common';
 import { single, multi, pie, times } from '../data';
 import * as ccxt from 'ccxt';
+import { ActivatedRoute } from '@angular/router';
+import { LocalStorageService } from 'ngx-webstorage';
 
 @Component({
   selector: 'RCE-dashboard',
@@ -19,6 +21,8 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   name = 'UI Platform';
 
   miniNav: boolean = false;
+
+  exchangeId: string;
 
   
 
@@ -124,22 +128,37 @@ export class DashboardComponent implements OnInit, AfterViewInit {
   theme(theme: string): void {
     localStorage.setItem('theme', theme);
   }
-
-
   constructor(public media: TdMediaService,
     public dialog: MatDialog,
     private _changeDetectorRef: ChangeDetectorRef,
     private _iconRegistry: MatIconRegistry,
-    private _domSanitizer: DomSanitizer) {
+    private _domSanitizer: DomSanitizer,
+    private route: ActivatedRoute,
+    private storage: LocalStorageService) {
       this._iconRegistry.addSvgIconInNamespace('assets', 'covalent',
               this._domSanitizer.bypassSecurityTrustResourceUrl
           ('https://raw.githubusercontent.com/Teradata/covalent-quickstart/develop/src/assets/icons/covalent.svg'));
 
           Object.assign(this, {pie, single, multi, times});
+          this.route.paramMap.subscribe( param => {
+            this.exchangeId = param.get('id');
+            if (this.exchangeId) {
+              this.pie = [];
+              this.single = [];
+              this.multi = [];
+              this.times = [];
+              Object.assign(this, {pie, single, multi, times});
+              this.storage.store('pageTitle', 'Dashboard - ' + this.exchangeId.toUpperCase());
+            } else {
+              this.storage.store('pageTitle', 'Dashboard - BITTREX');
+            }
+          });
+
     }
 
   ngOnInit() {
-
+    
+    
     // let exchange = new ccxt[10] ({ enableRateLimit: true });
 
     // console.log(exchange.urls);
@@ -152,6 +171,11 @@ export class DashboardComponent implements OnInit, AfterViewInit {
     // broadcast to all listener observables when loading the page
     this.media.broadcast();
     this._changeDetectorRef.detectChanges();
+  }
+  loadMarkets(marketId: string) {
+
+
+    
   }
 
   toggleMiniNav(): void {

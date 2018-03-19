@@ -1,0 +1,206 @@
+<td-expansion-panel #panel>
+  <ng-template td-expansion-panel-header>
+    <mat-toolbar color="accent">
+      <span>Select Exchange & Symbol </span>
+    </mat-toolbar>
+  </ng-template>
+  <td-expansion-summary>
+    <div class="md-padding">
+      <div flex layout-gt-xs="row" layout-align="start center">
+        <span flex="20" class="mat-subheading-2">Selected Exchange</span>
+        <span flex="5" hide-xs>
+          <mat-icon class="tc-grey-500">chevron_right</mat-icon>
+        </span>
+        <span flex>{{selectedExchange}}</span>
+        <span flex="20" class="mat-subheading-2">Currency</span>
+        <span flex="5" hide-xs>
+          <mat-icon class="tc-grey-500">chevron_right</mat-icon>
+        </span>
+        <span flex="15">{{selectedCurrency}}</span>
+      </div>
+      <div flex layout-gt-xs="row" layout-align="start center">
+        <span flex="20" class="mat-subheading-2">Selected Symbol</span>
+        <span flex="5" hide-xs>
+          <mat-icon class="tc-grey-500">chevron_right</mat-icon>
+        </span>
+        <span flex>{{selectedSymbol}}</span>
+      </div>
+    </div>
+  </td-expansion-summary>
+  <mat-card>
+    <mat-card-title>
+      <div layout="row" layout-fill>
+        <span flex='20'></span>
+        <span flex='30'>Select Exchange: </span>
+        <mat-select flex='30' #ex (selectionChange)="loadSelectedMarket(ex.value)" [(value)]="exSelected">
+          <mat-option *ngFor="let name of exchanges" [value]="name">{{name}}</mat-option>
+        </mat-select>
+        <span flex></span>
+      </div>
+    </mat-card-title>
+    <div layout="row" layout-align="start center" class="pad-left-sm pad-right-sm">
+      <span *ngIf="!searchBox.searchVisible" class="push-left-sm">
+        <span class="mat-title">Available Markets</span>
+      </span>
+      <span *ngIf="!searchBox.searchVisible" class="push-left-sm">
+        <!-- <span *ngIf="(selectable && !selectedRows.length) || !selectable" class="mat-title">Title here</span> -->
+        <span *ngIf="selectedRows.length && selectable" class="mat-body-1">0 item(s) selected</span>
+      </span>
+      <td-search-box #searchBox backIcon="arrow_back" class="push-right-sm" placeholder="Search here" (searchDebounce)="search($event)"
+        flex>
+      </td-search-box>
+    </div>
+    <mat-divider></mat-divider>
+    <td-data-table #dataTable [data]="filteredData" [columns]="columns"  [clickable]="clickable" [multiple]="multiple"
+      [sortable]="true" [sortBy]="sortBy" [(ngModel)]="selectedRows" [sortOrder]="sortOrder" (sortChange)="sort($event)" (rowClick)="setSelecteSymbol($event);panel.close()"
+      (rowSelect)="setSelecteSymbol($event);panel.close()" [style.height.px]="500">
+    </td-data-table>
+    <div class="md-padding" *ngIf="!dataTable.hasData" layout="row" layout-align="center center">
+      <h3>No results to display.</h3>
+    </div>
+    <td-paging-bar #pagingBar [pageSize]="pageSizeMarket" [total]="filteredTotal" (change)="page($event)">
+      <span hide-xs>Rows per page:</span>
+      <mat-select [style.width.px]="50" [(ngModel)]="pageSizeMarket">
+        <mat-option *ngFor="let size of [50,100,200,500]" [value]="size">
+          {{size}}
+        </mat-option>
+      </mat-select>
+      {{pagingBar.range}}
+      <span hide-xs>of {{pagingBar.total}}</span>
+    </td-paging-bar>
+  </mat-card>
+</td-expansion-panel>
+<div layout="column" layout-margin *ngIf="selectedSymbol !== ''" flex layout-fill>
+  <div layout="row" flex layout-align="start center">
+    <span flex>
+      <h3>Trading</h3>
+    </span>
+  </div>
+  <div layout="row" flex layout-margin layout-align="start center">
+      <mat-card flex="48">
+          <mat-card-title class="bgc-blue-600"><span [style.color]="'#fff'" >Buy {{selectedCurrency}}</span></mat-card-title>
+          <mat-divider></mat-divider>
+          <mat-card-content>
+              <div flex layout="row" layout-fill>
+            <form flex class="example-container">
+              <mat-form-field flex [hideRequiredMarker]="'false'" [hintLabel]="selectedCurrency" [floatLabel]="'auto'">
+                  <mat-label>Units</mat-label>
+                <input matInput name="buyQty" [(ngModel)]="buyQty" placeholder="Enter Units to Buy" required>
+              </mat-form-field>
+    
+              <mat-form-field flex [floatLabel]="'auto'" [hintLabel]="'BTC'">
+                <mat-label>Asks</mat-label>
+                <input matInput name="buyPrice" [(ngModel)]="buyPrice" placeholder="Enter Buy Price" required>
+              </mat-form-field>
+    
+              <mat-form-field flex [hideRequiredMarker]="'false'" [floatLabel]="'auto'">
+                  <mat-label>Type</mat-label>
+                <mat-select name="buyType" [(value)]="typeSelected" required>
+                  <mat-option selected value="limit">Limit (Default)</mat-option>
+                  <mat-option value="conditional">Conditional</mat-option>
+                </mat-select>
+              </mat-form-field>
+              <mat-form-field flex [floatLabel]="'auto'" [hintLabel]="'BTC'">
+                  <mat-label>Total</mat-label>
+                  <input matInput name="buyTotal" placeholder="Total" [ngModel]="buyPrice * buyQty" >
+              </mat-form-field>
+              <div class="button-row">
+                  <span flex></span>
+                  <button mat-raised-button color="primary">Buy {{selectedCurrency}}</button>
+                </div>
+            </form>
+          </div>
+            </mat-card-content>
+    </mat-card>
+    <span flex="2"></span>
+    <mat-card flex>
+				<mat-card-title class="bgc-blue-600"><span [style.color]="'#fff'">Sell {{selectedCurrency}}</span></mat-card-title>
+				<mat-divider></mat-divider>
+				<mat-card-content>
+          <div flex layout="row" layout-align="start center">
+        <form flex class="example-container">
+          <mat-form-field flex [hideRequiredMarker]="'false'" [hintLabel]="selectedCurrency" [floatLabel]="'auto'">
+              <mat-label>Units</mat-label>
+            <input matInput name="sellQty" placeholder="Enter Units to sell" [(ngModel)]="sellQty" required>
+          </mat-form-field>
+
+          <mat-form-field flex [floatLabel]="'auto'" [hintLabel]="'BTC'">
+            <mat-label>Asks</mat-label>
+            <input matInput name="sellPrice"placeholder="Enter sell Price" [(ngModel)]="sellPrice" required>
+          </mat-form-field>
+
+          <mat-form-field flex [hideRequiredMarker]="'false'" [floatLabel]="'auto'">
+              <mat-label>Type</mat-label>
+            <mat-select name="sellType" [(value)]="typeSelected" required>
+              <mat-option selected value="limit">Limit (Default)</mat-option>
+              <mat-option value="conditional">Conditional</mat-option>
+            </mat-select>
+          </mat-form-field>
+          <mat-form-field flex [floatLabel]="'auto'" [hintLabel]="'BTC'">
+              <mat-label>Total</mat-label>
+              <input matInput  name="sellTotal" placeholder="Total" [ngModel]="sellQty * sellPrice">
+          </mat-form-field>
+          <div class="button-row">
+              <span flex></span>
+              <button mat-raised-button color="primary">Sell {{selectedCurrency}}</button>
+            </div>
+        </form>
+      </div>
+        </mat-card-content>
+    </mat-card>
+  </div>
+  <div layout="row" layout-margin flex layout-align="start center">
+    <span flex>
+      <h3>Order Book</h3>
+    </span>
+  </div>
+  <div layout="row" flex layout-margin layout-align="start center">
+    <mat-card>
+        <mat-card-title class="bgc-blue-600"><span [style.color]="'#fff'">Bids</span></mat-card-title>
+				<mat-divider></mat-divider>
+				<mat-card-content>
+      <td-data-table #dataTableBid [data]="filteredDataBid" [columns]="bidColumns" [clickable]="clickable" [multiple]="multiple"
+        [sortable]="true" [(ngModel)]="selectedRows" [sortOrder]="sortOrder" (sortChange)="sort($event)" (rowClick)="populateBidPrice($event)"
+        (rowSelect)="populateBidPrice($event)" [style.width.px]="500" [style.height.px]="500">
+      </td-data-table>
+      <div class="md-padding" *ngIf="!dataTableBid.hasData" layout="row" layout-align="center center">
+        <h3>No results to display.</h3>
+      </div>
+      <td-paging-bar #pagingBarAsk [pageSize]="pageSize" [total]="filteredDataBidTotal" (change)="page($event)">
+        <span hide-xs>Rows per page:</span>
+        <mat-select [style.width.px]="10" [(ngModel)]="pageSize">
+          <mat-option *ngFor="let size of [10,20,50,100]" [value]="size">
+            {{size}}
+          </mat-option>
+        </mat-select>
+        {{pagingBarAsk.range}}
+        <span hide-xs>of {{pagingBarAsk.total}}</span>
+      </td-paging-bar>
+      </mat-card-content>
+    </mat-card>
+    <span flex="2"></span>
+    <mat-card>
+        <mat-card-title class="bgc-blue-600"><span [style.color]="'#fff'">Asks</span></mat-card-title>
+				<mat-divider></mat-divider>
+				<mat-card-content>
+      <td-data-table #dataTableAsk [data]="filteredDataAsk" [columns]="asksColumns" [clickable]="clickable" [multiple]="multiple"
+        [sortable]="true" [(ngModel)]="selectedRows" [sortOrder]="sortOrder" (sortChange)="sort($event)" (rowClick)="populateAskPrice($event)"
+        (rowSelect)="populateAskPrice($event)" [style.width.px]="500" [style.height.px]="500">
+      </td-data-table>
+      <div class="md-padding" *ngIf="!dataTableAsk.hasData" layout="row" layout-align="center center">
+        <h3>No results to display.</h3>
+      </div>
+      <td-paging-bar #pagingBarAsks [pageSize]="pageSize" [total]="filteredDataAskTotal" (change)="page($event)">
+        <span hide-xs>Rows per page:</span>
+        <mat-select [style.width.px]="10" [(ngModel)]="pageSize">
+          <mat-option *ngFor="let size of [10,20,50,100]" [value]="size">
+            {{size}}
+          </mat-option>
+        </mat-select>
+        {{pagingBarAsks.range}}
+        <span hide-xs>of {{pagingBarAsks.total}}</span>
+      </td-paging-bar>
+      </mat-card-content>
+    </mat-card>
+  </div>
+</div>

@@ -3,10 +3,10 @@
     <mat-card>
       <mat-card-title>
         <div layout="row" layout-align="start center">
-          <span flex>Card title</span>
+          <span flex>Price Trend - Linear</span>
           <span>
             <button mat-icon-button
-                    matTooltip="Card settings"
+                    matTooltip="Select Symbols"
                     [mat-menu-trigger-for]="settings1">
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -41,10 +41,10 @@
     <mat-card>
       <mat-card-title>
         <div layout="row" layout-align="start center">
-          <span flex>Card title</span>
+          <span flex>Volume Trend</span>
           <span>
             <button mat-icon-button
-                    matTooltip="Card settings"
+                    matTooltip="Select  Symbols"
                     [mat-menu-trigger-for]="settings2">
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -75,55 +75,15 @@
       </div>
     </mat-card>
   </div>
-  <div flex-gt-sm="50">
+  
+  <div flex-gt-sm="100">
     <mat-card>
       <mat-card-title>
         <div layout="row" layout-align="start center">
-          <span flex>Card title</span>
+          <span flex>Market Price</span>
           <span>
             <button mat-icon-button
-                    matTooltip="Card settings"
-                    [mat-menu-trigger-for]="settings3">
-              <mat-icon>more_vert</mat-icon>
-            </button>
-            <mat-menu xPosition="before" #settings3="matMenu">
-              <button mat-menu-item> Settings </button>
-              <mat-divider></mat-divider>
-              <button mat-menu-item> Remove </button>
-            </mat-menu>
-          </span>
-        </div>
-      </mat-card-title>
-      <mat-divider></mat-divider>
-      <div class="pad-top pad-bottom">
-        <div class="overflow-hidden" [style.height.px]="250">
-          <div [style.height.px]="270">
-            <ngx-charts-area-chart-stacked
-              [scheme]="{ domain: [ '#4DD0E1', '#BA68C8', '#FF7043' ] }"
-              [results]="times"
-              [gradient]="true"
-              [xAxis]="true"
-              [yAxis]="true"
-              [legend]="false"
-              [showXAxisLabel]="true"
-              [showYAxisLabel]="true"
-              [xAxisLabel]="xAxisLabel"
-              [yAxisLabel]="yAxisLabel"
-              [xAxisTickFormatting]="axisDate">
-            </ngx-charts-area-chart-stacked>
-          </div>
-        </div>
-      </div>
-    </mat-card>
-  </div>
-  <div flex-gt-sm="50">
-    <mat-card>
-      <mat-card-title>
-        <div layout="row" layout-align="start center">
-          <span flex>Card title</span>
-          <span>
-            <button mat-icon-button
-                    matTooltip="Card settings"
+                    matTooltip="Select Symbols"
                     [mat-menu-trigger-for]="settings4">
               <mat-icon>more_vert</mat-icon>
             </button>
@@ -143,13 +103,54 @@
     </mat-card>
   </div>
   <div flex-gt-sm="50">
+      <mat-card>
+        <mat-card-title>
+          <div layout="row" layout-align="start center">
+            <span flex>Price Trend - Volume</span>
+            <span>
+              <button mat-icon-button
+                      matTooltip="Select Symbols"
+                      [mat-menu-trigger-for]="settings3">
+                <mat-icon>more_vert</mat-icon>
+              </button>
+              <mat-menu xPosition="before" #settings3="matMenu">
+                <button mat-menu-item> Settings </button>
+                <mat-divider></mat-divider>
+                <button mat-menu-item> Remove </button>
+              </mat-menu>
+            </span>
+          </div>
+        </mat-card-title>
+        <mat-divider></mat-divider>
+        <div class="pad-top pad-bottom">
+          <div class="overflow-hidden" [style.height.px]="250">
+            <div [style.height.px]="270">
+              <ngx-charts-area-chart-stacked
+                [scheme]="{ domain: [ '#4DD0E1', '#BA68C8', '#FF7043' ] }"
+                [results]="times"
+                [gradient]="true"
+                [xAxis]="true"
+                [yAxis]="true"
+                [legend]="false"
+                [showXAxisLabel]="true"
+                [showYAxisLabel]="true"
+                [xAxisLabel]="xAxisLabel"
+                [yAxisLabel]="yAxisLabel"
+                [xAxisTickFormatting]="axisDate">
+              </ngx-charts-area-chart-stacked>
+            </div>
+          </div>
+        </div>
+      </mat-card>
+    </div>
+  <div flex-gt-sm="50">
     <mat-card>
       <mat-card-title>
         <div layout="row" layout-align="start center">
-          <span flex>Card title</span>
+          <span flex>Target Variance</span>
           <span>
             <button mat-icon-button
-                    matTooltip="Card settings"
+                    matTooltip="Select Symbols"
                     [mat-menu-trigger-for]="settings5">
               <mat-icon>more_vert</mat-icon>
             </button>
