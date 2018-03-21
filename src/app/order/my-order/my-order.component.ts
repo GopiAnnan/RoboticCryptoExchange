@@ -1,3 +1,4 @@
+import { Order } from './order';
 import { Price } from './price';
 import { Component, OnInit, Input } from '@angular/core';
 import { DomSanitizer } from '@angular/platform-browser';
@@ -23,6 +24,7 @@ export enum OrderBy {
 export interface IHeaders {
   [key: string]: OrderBy;
 }
+const DECIMAL_FORMAT: (v: any) => any = (v: number) => v.toFixed(4);
 
 @Component({
   selector: 'RCE-my-order',
@@ -34,6 +36,9 @@ export class MyOrderComponent implements OnInit {
   sellPrice: any;
   buyQty: any;
   buyPrice: any;
+  sellQty: any;
+  sortByAsk = 'price';
+  sortByBid = 'price';
   filteredDataBidTotal: number;
   filteredDataAskTotal: number;
   filteredDataAsk: any[];
@@ -46,6 +51,12 @@ export class MyOrderComponent implements OnInit {
   data: any;
   filteredData: any[];
   exchanges = ccxt.exchanges;
+  filteredBuyOrders: any[];
+  filteredSellOrders: any[];
+  sortByOrder = 'total';
+  filteredBuyOrdersTotal = 0;
+  filteredSellOrdersTotal = 0;
+
   proxy = 'https://cors-anywhere.herokuapp.com/';
   bidColumns: ITdDataTableColumn[] = [
     { name: 'price', label: 'Price', sortable: true, filter: true, width: 200 },
@@ -65,6 +76,15 @@ export class MyOrderComponent implements OnInit {
     { name: 'high', label: 'high', width: 100 },
     { name: 'low', label: 'low', width: 100 }
   ];
+  orderColumns: ITdDataTableColumn[] = [
+    { name: 'orderId', label: 'Order Id', sortable: true, filter: true, width: 150 },
+    { name: 'exchange', label: 'Exchange', sortable: true, filter: true, width: 150 },
+    { name: 'market', label: 'Symbol', filter: true, sortable: true },
+    { name: 'currency', label: 'Currency', filter: true, sortable: true, width: 150 },
+    { name: 'price', label: 'Price', width: 100 },
+    { name: 'volume', label: 'Volume',  width: 100 },
+    { name: 'total', label: 'Total', width: 150, format: DECIMAL_FORMAT },
+  ];
 
   //filteredData: ExchangeInfo[] = this.data;
   filteredTotal: number;
@@ -83,9 +103,12 @@ export class MyOrderComponent implements OnInit {
   marketValues: MarketValues[] = [];
   typeSelected = 'limit';
   @Input() marketId: string;
+
+  sellOrders: Order[] = [];
+  buyOrders: Order[] = [];
   constructor(private _dataTableService: TdDataTableService,
     private storage: LocalStorageService) { 
-      this.storage.store('pageTitle', 'Orders');
+      this.storage.store('pageTitle', 'Order');
     }
 
   ngOnInit() {
@@ -112,7 +135,6 @@ export class MyOrderComponent implements OnInit {
           ask: this.human_value (t['ask']),
           volume: this.human_value (t['quoteVolume']),
           timeStamp:  t['datetime'],
-          baseCurrency: market.info['BaseCurrency'],
           marketCurrency: market.info['MarketCurrency'],
           marketName: market.info['MarketName'],
           marketCurrencyLong: market.info['MarketCurrencyLong']
@@ -134,6 +156,7 @@ export class MyOrderComponent implements OnInit {
       this.selectedExchange = selectedExchange;
       this.selectedExchange = this.selectedExchange.toUpperCase();
      this.ex = new ccxt[selectedExchange]({ 'proxy': this.proxy });
+     this.ex.timeout = 30000;
       const markets = Observable.from(this.ex.loadMarkets());
       markets.subscribe( m => {
         Object.values(m).forEach( v => {
@@ -163,7 +186,18 @@ export class MyOrderComponent implements OnInit {
     this.pageSize = pagingEvent.pageSize;
     this.filter();
   }
-
+  filteredBuyOrderPage(pagingEvent: IPageChangeEvent): void {
+    this.fromRow = pagingEvent.fromRow;
+    this.currentPage = pagingEvent.page;
+    this.pageSize = pagingEvent.pageSize;
+    this.filterBuyOrder();
+  }
+  filteredSellOrderPage(pagingEvent: IPageChangeEvent): void {
+    this.fromRow = pagingEvent.fromRow;
+    this.currentPage = pagingEvent.page;
+    this.pageSize = pagingEvent.pageSize;
+    this.filterSellOrder();
+  }
   showAlert(event: any): void {
     let row: any = event.row;
     // .. do something with event.row
@@ -221,6 +255,12 @@ export class MyOrderComponent implements OnInit {
     this.buyQty = 0.00;
     this.sellPrice = 0.00;
     this.sellQty = 0.00;
+    this.buyOrders = this.storage.retrieve('buyOrders');
+    this.buyOrders = this.buyOrders.filter( o => o.market === this.selectedSymbol && o.exchange === this.selectedExchange);
+    this.filterBuyOrder();
+    this.sellOrders = this.storage.retrieve('sellOrders');
+    this.sellOrders = this.sellOrders.filter( o => o.market === this.selectedSymbol && o.exchange === this.selectedExchange);
+    this.filterSellOrder();
     this.fetchOrderBook(event.row['symbol']);
   }
   fetchOrderBook(symbol: string) {
@@ -244,7 +284,6 @@ export class MyOrderComponent implements OnInit {
               () => {
                   this.dataBid = bidPrices;
                   this.filterBid();
-                  console.log(bidPrices);
               });
               const ask = Observable.of(t['asks']);
               ask.subscribe( b => {
@@ -258,8 +297,7 @@ export class MyOrderComponent implements OnInit {
               (err) => console.log(err),
               () => {
                   this.dataAsk = bidAsks;
-                  this.filterAsk();
-                  console.log(bidPrices);
+                  this.filterAsk();                  
               });
           }
     );
@@ -275,8 +313,76 @@ export class MyOrderComponent implements OnInit {
     this.sellQty = $event.row['amount'];
     this.buyPrice = $event.row['price'];
     this.buyQty = $event.row['amount'];
-    
   }
-  
+  buyCoin() {
+    this.buyOrders = this.storage.retrieve('buyOrders');
+    if (this.buyOrders === null) {
+      this.buyOrders = [];
+    }
+    const orderIdConst = 'B0000';
+    this.buyOrders.push({
+        orderId: orderIdConst + (this.buyOrders.length + 1),
+        exchange: this.selectedExchange,
+        market: this.selectedSymbol,
+        currency: this.selectedCurrency,
+        price: this.buyPrice,
+        volume: this.buyQty,
+        total: this.buyPrice * this.buyQty,
+        orderType: 'Buy'
+    });
+    this.storage.store('buyOrders', this.buyOrders);
+    this.buyOrders = this.buyOrders.filter( o => o.market === this.selectedSymbol && o.exchange === this.selectedExchange);
+    this.filterBuyOrder();
+  }
+  sellCoin() {
+    this.sellOrders = this.storage.retrieve('sellOrders');
+    if (this.sellOrders === null) {
+      this.sellOrders = [];
+    }
+    const orderIdConst = 'S0000';
+    this.sellOrders.push({
+        orderId: orderIdConst + (this.sellOrders.length + 1),
+        exchange: this.selectedExchange,
+        market: this.selectedSymbol,
+        currency: this.selectedCurrency,
+        price: this.sellPrice,
+        volume: this.sellQty,
+        total: this.sellPrice * this.sellQty,
+        orderType: 'Sell'
+    });
+    this.storage.store('sellOrders', this.sellOrders);
+    this.sellOrders  = this.sellOrders.filter( o => o.market === this.selectedSymbol && o.exchange === this.selectedExchange);
+    this.filterSellOrder();
+  }
+  filterBuyOrder(): void {
+    let newData: any[] = this.buyOrders;
+    const excludedColumns: string[] = this.columns
+    .filter((column: ITdDataTableColumn) => {
+      return ((column.filter === undefined && column.hidden === true) ||
+              (column.filter !== undefined && column.filter === false));
+    }).map((column: ITdDataTableColumn) => {
+      return column.name;
+    });
+    this.filteredBuyOrdersTotal = newData.length;
+    newData = this._dataTableService.filterData(newData, this.searchTerm, true, excludedColumns);
+    newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
+    newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
+    this.filteredBuyOrders = newData;
+  }
+  filterSellOrder(): void {
+    let newData: any[] = this.sellOrders;
+    const excludedColumns: string[] = this.columns
+    .filter((column: ITdDataTableColumn) => {
+      return ((column.filter === undefined && column.hidden === true) ||
+              (column.filter !== undefined && column.filter === false));
+    }).map((column: ITdDataTableColumn) => {
+      return column.name;
+    });
+    this.filteredSellOrdersTotal = newData.length;
+    newData = this._dataTableService.filterData(newData, this.searchTerm, true, excludedColumns);
+    newData = this._dataTableService.sortData(newData, this.sortBy, this.sortOrder);
+    newData = this._dataTableService.pageData(newData, this.fromRow, this.currentPage * this.pageSize);
+    this.filteredSellOrders = newData;
+  }
 }
 

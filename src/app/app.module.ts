@@ -1,3 +1,4 @@
+import { AdminModule } from './admin/admin.module';
 
 import { RegisterComponent } from './register/register.component';
 import { LoginComponent } from './login/login.component';
@@ -28,6 +29,7 @@ import { AlertComponent } from './_directives';
 import { AuthGuard } from './_guards';
 import { AlertService, AuthenticationService, UserService } from './_services';
 import { JwtInterceptor, fakeBackendProvider } from './_helpers';
+import { DecimalPipe } from '@angular/common';
 
 
 @NgModule({
@@ -53,11 +55,13 @@ import { JwtInterceptor, fakeBackendProvider } from './_helpers';
     ExchangesModule,
     VendorWidgetsModule,
     AppCoreModule,
+    AdminModule
   ],
   providers: [AppRoutesTitles,
     AuthGuard,
     AlertService,
     AuthenticationService,
+    DecimalPipe,
     UserService,
     {
         provide: HTTP_INTERCEPTORS,

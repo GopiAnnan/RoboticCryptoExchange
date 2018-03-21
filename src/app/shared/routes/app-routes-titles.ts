@@ -38,6 +38,12 @@ export class AppRoutesTitles {
             icon: 'store',
             tooltip: '',
             mainTitle: 'Marketplace'
+        }, {
+            title: 'Admin Config',
+            route: 'admin-config',
+            icon: 'settings',
+            tooltip: '',
+            mainTitle: 'Marketplace'
         }];
     }
     loadSubRoutes() {
@@ -47,39 +53,39 @@ export class AppRoutesTitles {
                 routes: [{
                     title: 'Dashboard - Bittrex',
                     route: 'db-exchange/bittrex',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id: 'Bittrex'
                 },
                 {
                     title: 'Dashboard - OKEx',
                     route: 'db-exchange/okex',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id: 'OKEx'
                 },
                 {
                     title: 'Dashboard - Binance',
                     route: 'db-exchange/binance',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id : 'Binance'
                 }, {
                     title: 'Dashboard - Huobi',
                     route: 'db-exchange/huobi',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id: 'Huobi'
                 }, {
                     title: 'Dashboard - Bitfinex',
                     route: 'db-exchange/bitfinex',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id: 'Bitfinex'
                 }, {
                     title: 'Dashboard - Upbit',
                     route: 'db-exchange/upbit',
-                    icon: 'assessment',
+                    icon: 'dashboard',
                     tooltip: 'Coinscure Personaliation',
                     id: 'Upbit'
                 }]
@@ -107,22 +113,17 @@ export class AppRoutesTitles {
             }, {
                 key: 'order',
                 routes: [{
-                    title: 'My Orders',
+                    title: 'Order',
                     route: 'order/my-order',
                     icon: 'assessment',
                     tooltip: 'Coinscure Personaliation'
-                }, {
-                    title: 'Market Orders',
-                    route: 'order/market-order',
-                    icon: 'assessment',
-                    tooltip: 'Coinscure Personaliation'
-                },  {
-                    title: 'My Orders History',
+                },   {
+                    title: 'My Order History',
                     route: 'order/my-order-history',
                     icon: 'assessment',
                     tooltip: 'Coinscure Personaliation'
-                },  {
-                    title: 'Market Orders History',
+                }, {
+                    title: 'Market Order History',
                     route: 'order/market-order-history',
                     icon: 'assessment',
                     tooltip: 'Coinscure Personaliation'
@@ -145,7 +146,20 @@ export class AppRoutesTitles {
                     icon: 'assessment',
                     tooltip: 'Coinscure Personaliation'
                 }]
-            }
+            },  {
+                key: 'admin-config',
+                routes: [{
+                    title: "Api's",
+                    route: 'exchange-apis',
+                    icon: 'assessment',
+                    tooltip: 'Manage Api of Exchanges'
+                }, {
+                    title: 'App Keys',
+                    route: 'api-keys',
+                    icon: 'assessment',
+                    tooltip: 'Manage Api Keys'
+                }]
+                }
         ];
     }
 }

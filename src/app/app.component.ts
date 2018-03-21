@@ -143,7 +143,6 @@ onRouteChange(item: AppMainRoute) {
   this.mainRouteTitle = item.mainTitle;
   this.mainIcon = item.icon;
   this.subRoutes = this.approuteTitles.subRoutes.filter( r => r.key === item.route)[0].routes;
-  console.log(item.route);
   this.router.navigate([item.route]);
 }
 logout() {

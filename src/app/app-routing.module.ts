@@ -11,7 +11,8 @@ const routes: Routes = [
   {path : 'db-exchange', component: DashboardComponent, canActivate: [AuthGuard] },
   {path : 'exchanges', loadChildren: () => ExchangesModule, canActivate: [AuthGuard], canActivateChild: [AuthGuard] },
   {path : 'exchange-market', redirectTo: 'exchange-market', pathMatch: 'full', canActivate: [AuthGuard], canActivateChild: [AuthGuard] },
-  {path : 'order', redirectTo: 'order', pathMatch: 'full' },
+  {path : 'admin-config', redirectTo: 'admin-config', pathMatch: 'full', canActivate: [AuthGuard], canActivateChild: [AuthGuard] },
+  {path : 'order', redirectTo: 'order', pathMatch: 'full', canActivate: [AuthGuard], canActivateChild: [AuthGuard]  },
   { path: 'login', component: LoginComponent },
   { path: 'register', component: RegisterComponent },
   {path : '', redirectTo: 'db-exchange', pathMatch: 'full'  }

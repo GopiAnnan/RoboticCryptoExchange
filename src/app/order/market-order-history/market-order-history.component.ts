@@ -1,4 +1,6 @@
 import { Component, OnInit } from '@angular/core';
+import { TdDataTableService } from '@covalent/core';
+import { LocalStorageService } from 'ngx-webstorage';
 
 @Component({
   selector: 'RCE-market-order-history',
@@ -7,7 +9,10 @@ import { Component, OnInit } from '@angular/core';
 })
 export class MarketOrderHistoryComponent implements OnInit {
 
-  constructor() { }
+  constructor(private _dataTableService: TdDataTableService,
+    private storage: LocalStorageService) {
+    this.storage.store('pageTitle', 'Market Order History');
+   }
 
   ngOnInit() {
   }

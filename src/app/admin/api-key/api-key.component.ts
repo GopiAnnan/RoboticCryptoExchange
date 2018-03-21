@@ -1,69 +1,75 @@
+import { ExchangeRoutingModule } from './../../exchanges/exchange-routing.module';
+import { apiKeys } from './keys';
 import { Component, OnInit } from '@angular/core';
-import { TdDataTableService, TdDataTableSortingOrder, ITdDataTableSortChangeEvent, ITdDataTableColumn } from '@covalent/core/data-table';
-import { IPageChangeEvent } from '@covalent/core/paging';
-import { ExchangeInfo } from '../exchange-info';
-
-const DECIMAL_FORMAT: (v: any) => any = (v: number) => v.toFixed(2);
-
-import * as ccxt from 'ccxt';
 import { Observable } from 'rxjs/Observable';
+import * as ccxt from 'ccxt';
 import 'rxjs/add/observable/from';
+import { ITdDataTableColumn } from '@covalent/core';
+import { TdDataTableSortingOrder } from '@covalent/core';
+import { ITdDataTableSortChangeEvent } from '@covalent/core';
+import { TdDataTableService } from '@covalent/core';
 import { LocalStorageService } from 'ngx-webstorage';
+import { IPageChangeEvent } from '@covalent/core';
+
+export interface ApiKey {
+  exchange: string;
+  apiKey?: string;
+  secret?: string;
+  skip?: boolean;
+}
+
 @Component({
-  selector: 'RCE-all-exchanges',
-  templateUrl: './all-exchanges.component.html',
-  styleUrls: ['./all-exchanges.component.scss']
+  selector: 'RCE-api-key',
+  templateUrl: './api-key.component.html',
+  styleUrls: ['./api-key.component.scss']
 })
-export class AllExchangesComponent implements OnInit {
-  data: ExchangeInfo[];
-  columns: ITdDataTableColumn[] = [
-    { name: 'id',  label: 'Id', sortable: true, filter: true, width: 150 },
-    { name: 'name', label: 'Name', filter: true, sortable: true, width: 150 },
-    { name: 'logo', label: 'Brand', filter: true, sortable: true, width: 150 },
-    { name: 'www', label: 'Website', hidden: true },
-    { name: 'countries', label: 'countries', filter: true, sortable: true, width: 150 },
-    { name: 'doc', label: 'References', filter: true, sortable: true},
-  ];
+export class ApiKeyComponent implements OnInit {
+  exchangeAppKey: ApiKey[] = [];
   
+  columns: ITdDataTableColumn[] = [
+    { name: 'exchange',  label: 'Exchange', sortable: true, filter: true, width: 100 },
+    { name: 'apiKey', label: 'Api Key', filter: true, sortable: true, width: 350 },
+    { name: 'secret', label: 'Secret', filter: true, sortable: true, width: 450 },
+    { name: 'skip', label: 'Skip', filter: true, sortable: true, width: 100  }
+  ];
+
+  filteredData: ApiKey[] = [];
   filteredTotal: number;
-  filteredData: ExchangeInfo[] = [];
+
   searchTerm: string = '';
   fromRow: number = 1;
   currentPage: number = 1;
   pageSize: number = 50;
-  sortBy: string = 'name';
+  sortBy: string = 'exchange';
   selectedRows: any[] = [];
   sortOrder: TdDataTableSortingOrder = TdDataTableSortingOrder.Ascending;
-
   constructor(private _dataTableService: TdDataTableService , private storage: LocalStorageService) {
-    this.storage.store('pageTitle', 'All Supported Exchanges');
+    this.storage.store('pageTitle', 'Mange Api Key');
   }
-  
 
   ngOnInit() {
     const exchanges = Observable.from(ccxt.exchanges);
-    const exchangeToBind: ExchangeInfo[] = [];
-    let exInfo: ExchangeInfo;
     exchanges.subscribe( e => {
-        const ex = new ccxt[e];
-        exInfo = {
-          id: ex.id,
-          name: ex.name,
-          logo: ex.urls.logo,
-          countries: ex.countries,
-          www: ex.urls.www,
-          api: ex.urls.api,
-          doc: ex.urls.doc
-        };
-        exchangeToBind.push(exInfo);
-      },
-      (e) => console.log(e),
-      () => {
-        this.data = exchangeToBind;
-        this.filter();
+      let ak: ApiKey = {
+        exchange: e
+      };
+      if (apiKeys[e]) {
+        if (apiKeys[e].apiKey) {
+          ak.apiKey = apiKeys[e].apiKey;
+        }
+        if (apiKeys[e].secret) {
+          ak.secret = apiKeys[e].secret;
+        }
+        if (apiKeys[e].skip !== undefined) {
+          ak.skip = apiKeys[e].skip;
+        }
       }
-    );
-    
+      this.exchangeAppKey.push(ak);
+    },
+    (e) => console.log(e),
+    () => {
+      this.filter();
+    });
   }
   sort(sortEvent: ITdDataTableSortChangeEvent): void {
     this.sortBy = sortEvent.name;
@@ -89,7 +95,7 @@ export class AllExchangesComponent implements OnInit {
   }
 
   filter(): void {
-    let newData: any[] = this.data;
+    let newData: any[] = this.exchangeAppKey;
     const excludedColumns: string[] = this.columns
     .filter((column: ITdDataTableColumn) => {
       return ((column.filter === undefined && column.hidden === true) ||
